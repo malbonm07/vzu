@@ -9,20 +9,38 @@
         </div>
     </AppPanel>
     <AppPanel v-else class="game-step-2">
-      <header>
-        <div>
-          <h1>Good luck, {{userName}}!</h1>
+      <header class="header">
+        <div class="header__name">
+          <p class="header__name-title">Good luck, {{userName}}!</p>
+          <p class="header__name-subtitle">Pick up the right cards</p>
+        </div>
+        <div class="header__time">
+          <p class="header__time-title">Your score: {{timeup}} seconds</p>
+          <p>The faster the better!</p>
         </div>
       </header>
-      <main></main>
+      <main>
+        <div class="droppable-area">
+          <div>
+            <drag v-for="card in shuffledCards" :key="card.id" @dragstart="prueba(n)" class="drag">
+              <img :src="card.image" :alt="card.alt">
+            </drag>
+          </div>
+        </div>
+      </main>
     </AppPanel>
     <transition-group name="list" tag="div">
       <drag v-for="n in items" :key="n" @dragstart="prueba(n)" class="drag" :data="n" :type="typeof n">{{n}}</drag>
     </transition-group>
     <div class="group">
-      <drop class="ones" @drop="onOneDrop" accepts-type="number" :accepts-data="(d) => d === 1">
-        <span v-if="oneDropped">drop</span>
-      </drop>
+      <div>
+        <drop v-if="test.isAvailable" class="ones" @drop="onTestDrop">
+          <span v-if="oneDropped">drop</span>
+        </drop>
+        <drag v-else @dragstart="prueba(test)" @cut="remove(n)" class="drag">
+          <img :src="test.image" :alt="test.alt">
+        </drag>
+      </div>
       <drop class="twos" @drop="onTwoDrop" accepts-type="number" :accepts-data="(d) => d === 2">
         <span v-if="twoDropped">drop</span>
       </drop>
@@ -37,8 +55,13 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import AppPanel from '@/components/AppPanel.vue'
+
+import zoovuZ from '@/assets/images/zoovu-z.svg';
+import zoovuO from '@/assets/images/zoovu-o.svg';
+import zoovuV from '@/assets/images/zoovu-v.svg';
+import zoovuU from '@/assets/images/zoovu-u.svg';
+
+import AppPanel from '@/components/AppPanel.vue';
 import { Drag, Drop } from "vue-easy-dnd";
 
 export default {
@@ -58,17 +81,54 @@ export default {
       time: 0,
       pickupCards: [
         {
-          image: '',
-          id: '',
+          image: zoovuZ,
+          alt: 'z',
+          id: 1,
           position: ''
-        }
+        },
+        {
+          image: zoovuO,
+          alt: 'o',
+          id: 2,
+          position: ''
+        },
+        {
+          image: zoovuO,
+          alt: 'o',
+          id: 3,
+          position: ''
+        },
+        {
+          image: zoovuV,
+          alt: 'v',
+          id: 4,
+          position: ''
+        },
+        {
+          image: zoovuU,
+          alt: 'u',
+          id: 5,
+          position: ''
+        },
       ],
+      shuffledCards: [],
       zoovuDroppableArea: [],
       messages: {
         submitError: null
       },
 
       items: [1, "a", 2, "b"],
+
+      test: {
+        isAvailable: true,
+        pairMatch: 2,
+        currentData: {
+          image: '',
+          id: null,
+          alt: ''
+        }
+      },
+
       oneDropped: false,
       twoDropped: false,
       aDropped: false,
@@ -80,7 +140,9 @@ export default {
 
     },
     shuffle(array) {
-      console.log(array)
+      if(array.length < 1) return;
+      let shuffledArray = array.sort(() => Math.random() - 0.5)
+      return shuffledArray
     },
     restart() {
 
@@ -110,20 +172,45 @@ export default {
       console.log(e);
       this.bDropped = true;
     },
+    onTestDrop(e) {
+      if(this.test.isAvailable) {
+        if(e.data === this.test.pairMatch) {
+          this.remove();
+          console.log('exito')
+        }
+        else {
+          this.test.isAvailable = false
+          this.test.currentData = e.data
+          console.log(this.test)
+        }
+      }
+      else {
+        return;
+      }
+    },
     prueba(n) {
       console.log(n)
+      console.log('empezo el juego')
+    },
+    remove() {
+      // let index = 0
+      this.items = this.items.slice(0,1)
+      console.log(this.items)
+      // this.$delete(this.shuffledCards, index)
     }
+  },
+  computed: {
+    timeup() {
+      return 123
+    }
+  },
+  created() {
+    this.shuffledCards = this.shuffle(this.pickupCards)
   }
 }
 </script>
 
 <style lang="scss">
-
-html,
-body {
-  height: 100%;
-  font-family: "Roboto";
-}
 
 .home {
   min-height: 100vh;
@@ -193,6 +280,49 @@ body {
     color: red;
   }
 }
+
+.header {
+  padding: 40px 10px;
+  max-width: var(--max-witdh);
+  margin: auto;
+  @media (min-width: 768px) {
+    display: flex;
+    justify-content: space-between;
+    justify-items: center;
+  }
+  &__name {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--secondary-font-color);
+    &-title {
+      font-weight: bold;
+      font-size: 24px;
+      color: var(--primary-font-color);
+      margin-bottom: 30px;
+    }
+    &-subtitle {
+      letter-spacing: 1px;
+    }
+  }
+  &__time {
+    color: var(--secondary-font-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    @media (min-width: 768px) {
+      text-align: right;
+    }
+    &-title {
+      color: var(--primary-color);
+      font-size: 24px;
+      font-size: light;
+      letter-spacing: 2px;
+      margin-bottom: 30px;
+    }
+  }
+}
+
 .drag {
   width: 60px;
   height: 60px;
@@ -227,7 +357,6 @@ body {
 .twos::before {
   color: rgba(0, 0, 0, 0.4);
   font-size: 25px;
-  font-weight: bold;
   position: absolute;
   top: 50%;
   left: 50%;

@@ -15,6 +15,7 @@
     --smoke-color: #cccccc;
     --bg-primary: #f4f5f8;
     --bg-secondary: #FAFAFC;
+    --max-witdh: 1200px;
 }
 * {
   box-sizing: border-box;
@@ -25,8 +26,8 @@
   font-family: 'Campton', Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  /* text-align: center; */
+  /* color: #2c3e50; */
   min-height: 100vh;
 }
 ::-webkit-input-placeholder {
