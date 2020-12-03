@@ -16,6 +16,7 @@
     --bg-primary: #f4f5f8;
     --bg-secondary: #FAFAFC;
     --max-witdh: 1200px;
+    --dashed-border: #7deccb;
 }
 * {
   box-sizing: border-box;

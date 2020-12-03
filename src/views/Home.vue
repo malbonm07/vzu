@@ -1,5 +1,7 @@
 <template>
   <div class="home">
+
+    <!------------------- STEP 1------------------->
     <AppPanel v-if="game.currentStep == 1" class="game-step-1">
         <div class="panel-form">
           <p class="panel-form__title">Hello friend, tell me your name...</p>
@@ -8,49 +10,57 @@
           <button @click="nextStep" class="panel-form__btn">Let's go <i class="arrow right"></i></button>
         </div>
     </AppPanel>
+    <!------------------- END STEP ------------------->
+
+
+    <!------------------- STEP 2------------------->
     <AppPanel v-else class="game-step-2">
+
+      <!------------------- HEADER ------------------->
       <header class="header">
         <div class="header__name">
           <p class="header__name-title">Good luck, {{userName}}!</p>
           <p class="header__name-subtitle">Pick up the right cards</p>
         </div>
         <div class="header__time">
-          <p class="header__time-title">Your score: {{timeup}} seconds</p>
+          <p class="header__time-title">Your score: {{time}} seconds</p>
           <p>The faster the better!</p>
         </div>
       </header>
-      <main>
-        <div class="droppable-area">
-          <div>
-            <drag v-for="card in shuffledCards" :key="card.id" @dragstart="prueba(n)" class="drag">
+      <!------------------- END HEADER------------------->
+
+      <!------------------- MAIN BODY ------------------->
+      <main class="main">
+
+        <!------------------- CARDS GROUP ------------------->
+        <div class="grid-area drag-area">
+          <drag v-for="card in shuffledCards" :key="card.id" @dragstart="dragged(card)" class="drag-area__item" :drag-image-opacity="0.8" :data="currentCard" type="object">
               <img :src="card.image" :alt="card.alt">
+          </drag>
+          <drop v-for="slot in emptyShuffledSlots" :key="slot.id" class="drop-allowed-turn-off" @drop="onCardReturned">
+          </drop>
+        </div>
+        <!------------------- CARDS GROUP ------------------->
+
+        <p>...and drop them here to make the logo great <span>again!</span></p>
+
+        <!------------------- SLOTS GROUP ------------------->
+        <div class="grid-area drop-area">
+          <div class="drop-area__item" v-for="(slot) in droppableSlots" :key="slot.id">
+            <drop v-if="slot.isAvailable" class="drop-area__item-available" @drop="onCardDrop" :ref="slot.id" :id="slot.pairMatch">
+            </drop>
+            <drag v-else :disabled="slot.matched" class="drop-area__item-unavailable" :data="currentCard" :id="slot.pairMatch" @dragstart="dragged(slot.currentData)">
+              <img :src="slot.currentData.image" :alt="slot.currentData.alt">
             </drag>
           </div>
         </div>
+        <!------------------- SLOTS GROUP ------------------->
       </main>
+      <!------------------- END MAIN BODY------------------->
+
     </AppPanel>
-    <transition-group name="list" tag="div">
-      <drag v-for="n in items" :key="n" @dragstart="prueba(n)" class="drag" :data="n" :type="typeof n">{{n}}</drag>
-    </transition-group>
-    <div class="group">
-      <div>
-        <drop v-if="test.isAvailable" class="ones" @drop="onTestDrop">
-          <span v-if="oneDropped">drop</span>
-        </drop>
-        <drag v-else @dragstart="prueba(test)" @cut="remove(n)" class="drag">
-          <img :src="test.image" :alt="test.alt">
-        </drag>
-      </div>
-      <drop class="twos" @drop="onTwoDrop" accepts-type="number" :accepts-data="(d) => d === 2">
-        <span v-if="twoDropped">drop</span>
-      </drop>
-      <drop class="as" @drop="onADrop" accepts-type="string" :accepts-data="(d) => d === 'a'">
-        <span v-if="aDropped">drop</span>
-      </drop>
-      <drop class="bs" @drop="onBDrop" accepts-type="string" :accepts-data="(d) => d === 'b'">
-        <span v-if="bDropped">drop</span>
-      </drop>
-    </div>
+    <!------------------- END STEP ------------------->
+
   </div>
 </template>
 
@@ -79,73 +89,132 @@ export default {
       },
       userName: '',
       time: 0,
+      currentCard: {},
+      matchs: 0,
       pickupCards: [
         {
           image: zoovuZ,
           alt: 'z',
           id: 1,
-          position: ''
         },
         {
           image: zoovuO,
           alt: 'o',
           id: 2,
-          position: ''
         },
         {
           image: zoovuO,
           alt: 'o',
           id: 3,
-          position: ''
         },
         {
           image: zoovuV,
           alt: 'v',
           id: 4,
-          position: ''
         },
         {
           image: zoovuU,
           alt: 'u',
           id: 5,
-          position: ''
         },
       ],
       shuffledCards: [],
-      zoovuDroppableArea: [],
+      emptyShuffledSlots: [],
+      droppableSlots: [
+        {
+          isAvailable: true,
+          pairMatch: 1,
+          matched: false,
+          currentData: {
+            image: '',
+            alt: '',
+            id: null
+          }
+        },
+        {
+          isAvailable: true,
+          pairMatch: 2,
+          matched: false,
+          currentData: {
+            image: '',
+            alt: '',
+            id: null
+          }
+        },
+        {
+          isAvailable: true,
+          pairMatch: 3,
+          matched: false,
+          currentData: {
+            image: '',
+            alt: '',
+            id: null
+          }
+        },
+        {
+          isAvailable: true,
+          pairMatch: 4,
+          matched: false,
+          currentData: {
+            image: '',
+            alt: '',
+            id: null
+          }
+        },
+        {
+          isAvailable: true,
+          pairMatch: 5,
+          matched: false,
+          currentData: {
+            image: '',
+            alt: '',
+            id: null
+          }
+        }
+      ],
       messages: {
         submitError: null
       },
-
-      items: [1, "a", 2, "b"],
-
-      test: {
-        isAvailable: true,
-        pairMatch: 2,
-        currentData: {
-          image: '',
-          id: null,
-          alt: ''
-        }
-      },
-
-      oneDropped: false,
-      twoDropped: false,
-      aDropped: false,
-      bDropped: false
     };
   },
   methods: {
     setup() {
-
+      this.shuffledCards = this.shuffle(this.pickupCards)
+    },
+    start() {
+      this.game.hasStarted = true;
+      this.initTimer();
+    },
+    finish() {
+      alert('el juego ha terminado');
+      clearInterval(this.timeRunnig);
     },
     shuffle(array) {
-      if(array.length < 1) return;
-      let shuffledArray = array.sort(() => Math.random() - 0.5)
-      return shuffledArray
+      if([...array].length < 1) return;
+      let shuffledArray = [...array].sort(() => Math.random() - 0.5)
+      return shuffledArray;
     },
     restart() {
-
+      this.game.hasStarted = false;
+      this.time = 0;
+      this.matchs = 0;
+      this.currentCard = {};
+      this.droppableSlots.forEach(slot => {
+        const clearCurrentdata = {
+          image: '',
+          alt: '',
+          id: null
+        }
+        slot.isAvailable = true;
+        slot.matched = false;
+        slot.currentData = clearCurrentdata;
+      })
+      this.setup();
+    },
+    initTimer() {
+      this.timeRunnig = setInterval(() => {
+        this.time += 1;
+      },1000);
     },
     nextStep() {
       const regex = /^\S+(?: \S+)*$/;
@@ -153,59 +222,92 @@ export default {
         this.game.currentStep = 2;
       }
       else {
-        this.messages.submitError = 'Please enter a valid name with maximum 15 characters'
+        this.messages.submitError = 'Please enter a valid name with maximum 15 characters';
       }
     },
-    onOneDrop(e) {
-      console.log(e);
-      this.oneDropped = true;
-    },
-    onTwoDrop(e) {
-      console.log(e);
-      this.twoDropped = true;
-    },
-    onADrop(e) {
-      console.log(e);
-      this.aDropped = true;
-    },
-    onBDrop(e) {
-      console.log(e);
-      this.bDropped = true;
-    },
-    onTestDrop(e) {
-      if(this.test.isAvailable) {
-        if(e.data === this.test.pairMatch) {
-          this.remove();
-          console.log('exito')
+    onCardDrop(e) {
+      
+      const card = this.currentCard;
+      const slotIndex = this.droppableSlots.findIndex(slot => slot.pairMatch === e.top.$attrs.id)
+      const slot = this.droppableSlots[slotIndex]
+      if(slot.isAvailable) {
+        if(this.isMatch(slot.pairMatch, card.id)) {
+          this.removeAndUpdate(slot, card);
+          slot.matched = true;
+          slot.isAvailable = false;
+          slot.currentData = card;
+          this.matchs += 1
         }
         else {
-          this.test.isAvailable = false
-          this.test.currentData = e.data
-          console.log(this.test)
+          this.time += 10;
+          this.removeAndUpdate(slot, card);
         }
       }
-      else {
-        return;
+    },
+    onCardReturned() {
+
+      const card = this.currentCard;
+      if(this.shuffledCards.findIndex(kard => kard.id === card.id) >= 0) return;
+      const slotIndex = this.droppableSlots.findIndex(slot => slot.currentData.id === card.id)
+      const slot = this.droppableSlots[slotIndex]
+      if(!slot) return;
+      this.clearSlot(slotIndex)
+      this.shuffledCards.push(card);
+    },
+    dragged(target) {
+      this.currentCard = target;
+      if(!this.game.hasStarted) {
+        this.start();
       }
     },
-    prueba(n) {
-      console.log(n)
-      console.log('empezo el juego')
+    removeAndUpdate(slot, card) {
+
+      let slotIndex = this.shuffledCards.findIndex(kard => kard.id === card.id);
+
+      if(slotIndex >= 0) {
+        this.shuffledCards.splice(slotIndex, 1)
+        slot.currentData = card;
+        slot.isAvailable = false;
+        if(this.emptyShuffledSlots.length > 0) return;
+        this.emptyShuffledSlots.push({})
+      }
+      else {
+        const indexToDelete = this.droppableSlots.findIndex(slot => slot.currentData.id === card.id)
+        this.clearSlot(indexToDelete)
+        const indexToAdd = this.droppableSlots.findIndex(zlot => zlot.pairMatch === slot.pairMatch)
+        let nextSlot = this.droppableSlots[indexToAdd]
+        nextSlot.currentData = card;
+        nextSlot.isAvailable = false;
+      }
     },
-    remove() {
-      // let index = 0
-      this.items = this.items.slice(0,1)
-      console.log(this.items)
-      // this.$delete(this.shuffledCards, index)
+    clearSlot(i) {
+      let previousSlot = this.droppableSlots[i];
+      previousSlot.currentData = {};
+      previousSlot.isAvailable = true;
+    },
+    isMatch(a,b) {
+      const uidExchange = ['z','o','o','v','u']
+      if(uidExchange[a-1] === uidExchange[b-1]) return true;
+      return false
     }
   },
   computed: {
-    timeup() {
-      return 123
+    hasEmptySLots() {
+      return this.emptyShuffledSlots.length > 0;
+    }
+  },
+  watch: {
+    matchs() {
+      if(this.matchs == 5) {
+        this.finish();
+        setTimeout(() => {
+          this.restart();
+        }, 10000)
+      }
     }
   },
   created() {
-    this.shuffledCards = this.shuffle(this.pickupCards)
+    this.setup();
   }
 }
 </script>
@@ -282,8 +384,8 @@ export default {
 }
 
 .header {
-  padding: 40px 10px;
-  max-width: var(--max-witdh);
+  padding: 40px 10px 20px 10px;
+  max-width: 1120px;
   margin: auto;
   @media (min-width: 768px) {
     display: flex;
@@ -323,6 +425,74 @@ export default {
   }
 }
 
+.main {
+  padding: 40px 10px;
+  max-width: var(--max-witdh);
+  margin: auto;
+  p {
+    margin-bottom: 30px;
+    padding-left: 30px;
+    color: var(--secondary-font-color)
+  }
+}
+
+.grid-area {
+  margin-left: auto;
+  margin-right: auto;
+  display: grid;
+  grid-template-columns: repeat(5, 200px);
+  justify-content: center;
+  /* grid-auto-rows: minmax(120px, auto); */
+  /* padding: 10px; */
+  grid-gap: 30px;
+  grid-auto-flow: dense;
+}
+
+.drag-area {
+  margin-bottom: 100px;
+  min-height: 200px;
+  &__item {
+    width: 100%;
+    height: 200px;
+    border-radius: 24px;
+    background-color: #FFF;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.drop-area {
+  &__item {
+    width: 100%;
+    height: 200px;
+    &-unavailable {
+      width: 200px;
+      height: 200px;
+      background-color: #FFF;
+      border-radius: 24px;
+      box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    &-available {
+      width: 200px; height: 200px;
+      border-radius: 20px;
+      background-position:  0 0, 0 0, 100% 0, 0 100%;
+      background-size: 3px 100%, 100% 3px, 3px 100% , 100% 3px;
+      background-repeat: no-repeat;
+      background-image:
+      repeating-linear-gradient(0deg, var(--dashed-border), var(--dashed-border) 10px, transparent 10px, transparent 20px), // left
+      repeating-linear-gradient(90deg, var(--dashed-border), var(--dashed-border) 10px, transparent 10px, transparent 20px), // top
+      repeating-linear-gradient(180deg, var(--dashed-border), var(--dashed-border) 10px, transparent 10px, transparent 20px), // right
+      repeating-linear-gradient(270deg, var(--dashed-border), var(--dashed-border) 10px, transparent 10px, transparent 20px) // bottom
+      ;
+      border-image: repeating-linear-gradient(0deg, var(--dashed-border), var(--dashed-border) 10px, transparent 10px, transparent 20px);
+      }
+  }
+}
 .drag {
   width: 60px;
   height: 60px;
@@ -333,50 +503,6 @@ export default {
   margin: 10px 10px 0 10px;
   font-size: 20px;
   transition: all 0.5s;
-}
-
-.group {
-  display: flex;
-}
-
-.as,
-.bs,
-.ones,
-.twos {
-  margin: 20px 10px;
-  border: 1px solid black;
-  height: 100px;
-  position: relative;
-  flex: 1;
-  padding: 10px;
-}
-
-.as::before,
-.bs::before,
-.ones::before,
-.twos::before {
-  color: rgba(0, 0, 0, 0.4);
-  font-size: 25px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.as::before {
-  content: "As";
-}
-
-.bs::before {
-  content: "Bs";
-}
-
-.ones::before {
-  content: "ONEs";
-}
-
-.twos::before {
-  content: "TWOs";
 }
 
 .drop-allowed {
@@ -390,7 +516,9 @@ export default {
 .drop-in {
   box-shadow: 0 0 5px rgba(0, 0, 255, 0.4);
 }
-
+.drop-allowed-turn-off {
+  background: transparent;
+}
 .list-enter,
 .list-leave-to {
   opacity: 0;
