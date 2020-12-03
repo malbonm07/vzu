@@ -22,6 +22,7 @@ describe('Game.vue', () => {
 
     wrapper.vm.setup()
     expect(wrapper.vm.shuffledCards[2].id).not.toBe(3)
+    expect(wrapper.vm.shuffledCards[4].id).not.toBe(5)
   })
 
   it('This should increment the time', () => {

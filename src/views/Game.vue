@@ -13,7 +13,7 @@
     <!------------------- END STEP ------------------->
 
 
-    <!------------------- STEP 2------------------->
+    <!----------------------- STEP 2 -------------------------->
     <AppPanel v-else class="game-step-2">
 
       <!------------------- HEADER ------------------->
@@ -42,7 +42,7 @@
           <drop v-for="slot in shuffledSlots" :key="slot.id" class="drop-allowed-turn-off" @drop="onCardReturnedTop">
           </drop>
         </div>
-        <!------------------- CARDS GROUP ------------------->
+        <!------------------- END CARDS GROUP ------------------->
 
         <p>...and drop them here to make the logo great <span>again!</span></p>
 
@@ -58,12 +58,12 @@
             </drag>
           </div>
         </div>
-        <!------------------- SLOTS GROUP ------------------->
+        <!------------------- END SLOTS GROUP ------------------->
       </main>
       <!------------------- END MAIN BODY------------------->
 
     </AppPanel>
-    <!------------------- END STEP ------------------->
+    <!------------------------ END STEP 2 ------------------------>
 
     <!------------------- MODAL SCORE ------------------->
     <transition name="modal">
@@ -99,15 +99,15 @@ export default {
   },
   data: function() {
     return {
+      userName: '',
       game: {
         currentStep: 1,
         hasStarted: false
       },
-      userName: '',
       time: 0,
       restartCountdown: 10,
-      currentDragCard: {},
       matchs: 0,
+      currentDragCard: {},
       pickupCards: cards,
       shuffledCards: [],
       shuffledSlots: [],
@@ -227,6 +227,7 @@ export default {
       const card = this.currentDragCard;
       const slotIndex = this.droppableSlots.findIndex(slot => slot.pairMatch === e.top.$attrs.id)
       const slot = this.droppableSlots[slotIndex]
+
       if(slot.isAvailable) {
         if(isMatch(slot.pairMatch, card.id)) {
           this.removeAndUpdate(slot, card);
@@ -328,66 +329,66 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.panel-form {
-  width: 400px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 40px;
-  transform: translateY(-40px);
-  &__title {
-    color: #2A2A2A;
-    font-size: 18px;
-  }
-  &__input {
-    font-family: 'Campton', Avenir, Helvetica, Arial, sans-serif;
-    width: 100%;
-    background-color: transparent;
-    border: none;
-    border-bottom: 1px solid #e0e2e5;
-    color: #333;
-    padding: 10px 0px;
-    text-align: center;
-    outline: none;
-    font-size: 18px;
-  }
-  &__btn {
-    color: var(--primary-color);
-    font-weight: bold;
-    padding: 12px 16px;
-    border: 1px solid #e2e4e9;
-    border-radius: 30px;
-    background-color: #FEFEFE;
-    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
-    .arrow {
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      margin-left: 8px;
-      border-top: 3px solid var(--primary-color);
-      border-left: 3px solid var(--primary-color);
-      transform: rotate(135deg);
-      border-radius: 2px;
-      &::after{
-        content: "";
-        display: block;
-        width: 1.8px;
-        height: 10px;
-        background-color: var(--primary-color);
-        transform: rotate(-45deg) translate(2.8px, -1px);
-        border-radius: 1px;
-        left: 0;
-        top: 0;
+  .panel-form {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    transform: translateY(-40px);
+    &__title {
+      color: #2A2A2A;
+      font-size: 18px;
+    }
+    &__input {
+      font-family: 'Campton', Avenir, Helvetica, Arial, sans-serif;
+      width: 100%;
+      background-color: transparent;
+      border: none;
+      border-bottom: 1px solid #e0e2e5;
+      color: #333;
+      padding: 10px 0px;
+      text-align: center;
+      outline: none;
+      font-size: 18px;
+    }
+    &__btn {
+      color: var(--primary-color);
+      font-weight: bold;
+      padding: 12px 16px;
+      border: 1px solid #e2e4e9;
+      border-radius: 30px;
+      background-color: #FEFEFE;
+      box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
+      .arrow {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        margin-left: 8px;
+        border-top: 3px solid var(--primary-color);
+        border-left: 3px solid var(--primary-color);
+        transform: rotate(135deg);
+        border-radius: 2px;
+        &::after{
+          content: "";
+          display: block;
+          width: 1.8px;
+          height: 10px;
+          background-color: var(--primary-color);
+          transform: rotate(-45deg) translate(2.8px, -1px);
+          border-radius: 1px;
+          left: 0;
+          top: 0;
+        }
       }
     }
-  }
-  .error-message {
-    font-size: 12px;
-    font-weight: normal;
-    color: red;
-  }
+    .error-message {
+      font-size: 12px;
+      font-weight: normal;
+      color: red;
+    }
+  } 
 }
 
 .header {
@@ -479,15 +480,6 @@ export default {
         animation: scaler 0.3s ease-in-out;
       }
     }
-  }
-}
-
-@keyframes scaler {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(1.2);
   }
 }
 
@@ -614,12 +606,22 @@ export default {
 .modal-leave-active {
   animation: mAnimation .1s ease-out reverse;
 }
-@keyframes mAnimation {
+
+@keyframes mAnimation { // Modal
   0% {
     opacity: 0;
   }
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes scaler { // Increase countdown
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.2);
   }
 }
 </style>
