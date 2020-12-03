@@ -5,18 +5,28 @@
 </template>
 
 <style lang="scss">
+
 @import url("//db.onlinewebfonts.com/c/9b1751bc70848a2a5938ba449afd2909?family=Campton");
+
 :root {    
-    --max-desktop-width: 1400px;
-    --primary-color: #612E96;
+    --max-desktop-width: 730px;
+    --primary-color: #3B0078;
     --secondary-color:  #2f2f2f;
     --primary-font-color: #2A2A2A;
-    --secondary-font-color: #CFD4DD;
+    --secondary-font-color: #c4cad3;
     --smoke-color: #cccccc;
     --bg-primary: #f4f5f8;
     --bg-secondary: #FAFAFC;
-    --max-witdh: 1200px;
-    --dashed-border: #7deccb;
+    --dashed-border-color: #7deccb;
+    --square-br:  16px;
+    --quare-size: 100px;
+    @media (min-width: 768px) {
+      --quare-size: 120px
+    }
+    @media (min-width: 1000px) {
+      --quare-size: 180px;
+      --max-desktop-width: 1020px;
+    }
 }
 * {
   box-sizing: border-box;
@@ -27,8 +37,6 @@
   font-family: 'Campton', Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* text-align: center; */
-  /* color: #2c3e50; */
   min-height: 100vh;
 }
 ::-webkit-input-placeholder {

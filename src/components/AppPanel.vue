@@ -4,7 +4,7 @@
     <div class="app-panel-bg">
       <div class="bg-figure triangle"></div>
       <div class="bg-figure circle"></div>
-      <div class="bg-figure circle"></div>
+      <!-- <div class="bg-figure circle"></div> -->
     </div>
   </div>
 </template>
@@ -26,7 +26,7 @@
     min-height: inherit;
     /* margin-left: auto;
     margin-right: auto; */
-    position: absolute;
+    position: fixed;
     z-index: -1;
     top: 0;
     left: 50%;
@@ -37,7 +37,7 @@
       transform: scale(1.4) rotate(40deg) translateY(60px);
     }
     @media (min-width: 1100px) {
-      transform: scale(1.6) rotate(40deg) translateY(60px);
+      transform: scale(2) rotate(40deg) translateY(130px) translateX(20px);
     }
     /* background-color: #FAFAFC; */
     /* border: 1px solid #aeaeae; */
@@ -50,18 +50,18 @@
 .circle {
   border-radius: 50%;
   background-color: #FAFAFC;
-}
-.circle:nth-last-child(2) {
-  transform: translateY(-20px);
+  box-shadow: 0px 220px #FAFAFC,
+              0px 440px #FAFAFC,
+              0px 660px #FAFAFC;
 }
 .triangle {
   width: 0;
   height: 0;
   margin-left: auto;
   margin-right: auto;
-  border-bottom: 180px solid #FCFCFD; 
+  border-bottom: 180px solid #FAFAFC; 
   border-left: 80px solid transparent; 
   border-right: 80px solid transparent;
-  transform: rotate(-265deg) translateY(-40px) translateX(-10px);
+  transform: rotate(-265deg) translateY(-20px) translateX(34px);
 }
 </style>
