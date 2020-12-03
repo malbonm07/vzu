@@ -4,10 +4,10 @@ Pieces placed in the wrong order will increment the clock time.
 ## Motivation
 A challenge to demostrate my skills.
 ## Code style
-Variable and function names written as camelCase.
+Variable and function names written as camelCase. <br/>
 The name of some classes are made with the BEM methodology.
 ## Screenshots
-dadsa
+Uploading...
 
 ## Tech/framework used
 <b>Built with</b>
