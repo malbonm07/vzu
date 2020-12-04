@@ -3,26 +3,25 @@ import Game from '@/views/Game.vue';
 
 describe('Game.vue', () => {
 
-  it('This should shuffle the array', () => {
-    const cards = [
-      { id: 1 },
-      { id: 2 },
-      { id: 3 },
-      { id: 4 },
-      { id: 5 }
-    ]
+  it('Should start the game when card is touched', () => {
     const wrapper = shallowMount(Game, {
       data() {
         return {
-          cards,
-          shuffledCards: []
+          time: 100,
+          matchs: 213312,
+          game: {
+            hasStarted: true
+          },
+          restartCountdown: 0
         }
       }
     })
-
-    wrapper.vm.setup()
-    expect(wrapper.vm.shuffledCards[2].id).not.toBe(3)
-    expect(wrapper.vm.shuffledCards[4].id).not.toBe(5)
+  
+    wrapper.vm.restart()
+    expect(wrapper.vm.time).toBe(0)
+    expect(wrapper.vm.matchs).toBe(0)
+    expect(wrapper.vm.game.hasStarted).toBeFalsy()
+    expect(wrapper.vm.restartCountdown).toBe(10)
   })
 
   it('This should increment the time', () => {

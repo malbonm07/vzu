@@ -21,13 +21,15 @@
   background: rgba(0,0,0,0.3);
   z-index: 10;
   &__content {
-    min-height: 200px;
+    /* min-height: 240px; */
     text-align: center;
     background: #ECEFF1;
     display: grid;
     align-items: center;
+    row-gap: 40px;
     animation: content 0.3s ease-in forwards;
     font-size: 18px;
+    padding: 40px;
     &-title {
       color:  #28A744;
       font-size: 26px;
@@ -37,7 +39,7 @@
       color: #28A744;
     }
     @media only screen and (min-width: 400px) {
-      width: 350px;
+      row-gap: 50px;
     }
   }
 }

@@ -5,8 +5,14 @@ function shuffle(array) {
 }
 
 function isMatch(slotID,cardID) {
-    const uidExchange = ['z','o','o','v','u']
-    if(uidExchange[slotID-1] === uidExchange[cardID-1]) return true;
+    const matchsDictionary = {
+        1: 'z',
+        2: 'o',
+        3: 'o',
+        4: 'v',
+        5: 'u',
+    }
+    if(matchsDictionary[slotID] === matchsDictionary[cardID]) return true;
     return false
 }
 

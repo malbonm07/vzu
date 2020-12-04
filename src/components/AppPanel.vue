@@ -4,7 +4,6 @@
     <div class="app-panel-bg">
       <div class="bg-figure triangle"></div>
       <div class="bg-figure circle"></div>
-      <!-- <div class="bg-figure circle"></div> -->
     </div>
   </div>
 </template>

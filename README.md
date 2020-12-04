@@ -6,6 +6,10 @@ A challenge to demostrate my skills.
 ## Code style
 Variable and function names written as camelCase. <br/>
 The name of some classes are made with the BEM methodology.
+## Highlights
+Added some animations. <br/>
+A little validation was added to prevent spaces and name with many characters. <br/>
+The background and the little clock was made with pure CSS.
 ## Screenshots
 Uploading...
 

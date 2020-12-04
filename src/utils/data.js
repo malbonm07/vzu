@@ -9,26 +9,36 @@ const cards = [
         image: zoovuZ,
         alt: 'z',
         id: 1,
+        key: "z1",
+        isAvailable: false
     },
     {
         image: zoovuO,
         alt: 'o',
         id: 2,
+        key: "z2",
+        isAvailable: false
     },
     {
         image: zoovuO,
         alt: 'o',
         id: 3,
+        key: "z3",
+        isAvailable: false
     },
     {
         image: zoovuV,
         alt: 'v',
         id: 4,
+        key: "z4",
+        isAvailable: false
     },
     {
         image: zoovuU,
         alt: 'u',
         id: 5,
+        key: "z5",
+        isAvailable: false
     },
 ]
 

@@ -23,7 +23,7 @@
           <p class="header__name-subtitle">Pick up the right cards</p>
         </div>
         <div class="header__time">
-          <p class="header__time-title"><span class="header__time-title-clock-icon"></span>Your score: <span class="countdown" :class="animateTime">{{time}}</span>seconds</p>
+          <p class="header__time-title"><span class="header__time-title-clock-icon"></span>Your score: <span class="countdown" :class="animateTime"><span :class="animateIncrement" v-show="animateIncrement" >+10</span>{{time}}</span>seconds</p>
           <p>The faster the better!</p>
         </div>
       </header>
@@ -34,13 +34,15 @@
 
         <!------------------- CARDS GROUP ------------------->
         <div class="grid-area drag-group" id="hola">
-          <drag v-for="card in shuffledCards" :key="card.id" @dragstart="dragged(card)" class="drag-group__item" :drag-image-opacity="0.8" :data="currentDragCard" type="object">
-            <div class="image-container">
-              <img class="logo-image" :src="card.image" :alt="card.alt">
-            </div>
-          </drag>
-          <drop v-for="slot in shuffledSlots" :key="slot.id" class="drop-allowed-turn-off" @drop="onCardReturnedTop">
-          </drop>
+          <div v-for="card in shuffledCards" :key="card.key" class="drag-group__item">
+            <drag v-if="!card.isAvailable" :drag-image-opacity="0.8" :data="currentDragCard" type="object" class="drop-group__item-unavailable" @dragstart="dragged(card)">
+              <div class="image-container">
+                <img class="logo-image" :src="card.image" :alt="card.alt">
+              </div>
+            </drag>
+            <drop v-else class="drop-group__item-available drop-allowed-turn-off" @drop="onCardReturnedTop" :id="card.key">
+            </drop>      
+          </div>
         </div>
         <!------------------- END CARDS GROUP ------------------->
 
@@ -51,7 +53,7 @@
           <div class="drop-group__item" v-for="(slot) in droppableSlots" :key="slot.pairMatch">
             <drop v-if="slot.isAvailable" class="drop-group__item-available" @drop="onCardDrop" :ref="slot.ref" :id="slot.pairMatch">
             </drop>
-            <drag v-else :disabled="slot.matched" class="drop-group__item-unavailable" :data="currentDragCard" :id="slot.pairMatch" @dragstart="dragged(slot.currentData)" @dragend="dropped">
+            <drag v-else class="drop-group__item-unavailable" :data="currentDragCard" :id="slot.pairMatch" @dragstart="dragged(slot.currentData)">
               <div class="image-container">
                 <img class="logo-image" :src="slot.currentData.image" :alt="slot.currentData.alt">
               </div>
@@ -110,13 +112,11 @@ export default {
       currentDragCard: {},
       pickupCards: cards,
       shuffledCards: [],
-      shuffledSlots: [],
       droppableSlots: [
         {
           isAvailable: true,
           pairMatch: 1,
           matched: false,
-          position: null,
           currentData: {
             image: '',
             alt: '',
@@ -127,7 +127,6 @@ export default {
           isAvailable: true,
           pairMatch: 2,
           matched: false,
-          position: null,
           currentData: {
             image: '',
             alt: '',
@@ -138,7 +137,6 @@ export default {
           isAvailable: true,
           pairMatch: 3,
           matched: false,
-          position: null,
           currentData: {
             image: '',
             alt: '',
@@ -149,7 +147,6 @@ export default {
           isAvailable: true,
           pairMatch: 4,
           matched: false,
-          position: null,
           currentData: {
             image: '',
             alt: '',
@@ -160,7 +157,6 @@ export default {
           isAvailable: true,
           pairMatch: 5,
           matched: false,
-          position: null,
           currentData: {
             image: '',
             alt: '',
@@ -177,7 +173,7 @@ export default {
     };
   },
   methods: {
-    nextStep() {
+    nextStep() {  
       const regex = /^\S+(?: \S+)*$/;
       if(regex.test(this.userName) && this.userName.length < 16) {
         this.game.currentStep = 2;
@@ -187,7 +183,10 @@ export default {
       }
     },
     setup() {
-      this.shuffledCards = shuffle(this.pickupCards);
+      const cards = this.pickupCards.map(c => {
+        return Object.assign({}, c)
+      })
+      this.shuffledCards = shuffle(cards);
     },
     start() {
       this.game.hasStarted = true;
@@ -201,7 +200,6 @@ export default {
       this.matchs = 0;
       this.restartCountdown = 10;
       this.currentDragCard = {};
-      this.shuffledSlots = [];
       this.droppableSlots.forEach(slot => {
         const clearCurrentdata = {
           image: '',
@@ -229,11 +227,9 @@ export default {
     },
     onCardDrop(e) {
 
-      const card = this.currentDragCard;
-      const slotIndex = this.droppableSlots.findIndex(slot => slot.pairMatch === e.top.$attrs.id)
-      const slot = this.droppableSlots[slotIndex]
-
-      if(!slot.position) slot.position = e.position.x // assigning slot position
+      const card = Object.assign({}, this.currentDragCard);
+      const index = this.droppableSlots.findIndex(slot => slot.pairMatch === e.top.$attrs.id)
+      const slot = this.droppableSlots[index]
 
       if(slot.isAvailable) {
         if(isMatch(slot.pairMatch, card.id)) {
@@ -249,31 +245,43 @@ export default {
         }
       }
     },
-    onCardReturnedTop() {
+    onCardReturnedTop(e) {
 
-      const card = this.currentDragCard;
-      if(this.shuffledCards.length === 4) this.shuffledSlots.splice(0,1);
-      if(this.shuffledCards.findIndex(kard => kard.id === card.id) >= 0) return;
-      const slotIndex = this.droppableSlots.findIndex(slot => slot.currentData.id === card.id)
-      const slot = this.droppableSlots[slotIndex]
-      if(!slot) return;
-      this.clearSlot(slotIndex)
-      this.shuffledCards.push(card);
+      const cardInHand = Object.assign({}, this.currentDragCard);
+      const {image, alt, id} = cardInHand;
+      const indexPre = this.shuffledCards.findIndex(kard => kard.id === cardInHand.id);
+      const indexNext = this.shuffledCards.findIndex(slot => slot.key === e.top.$attrs.id);
+      const nextSlot = this.shuffledCards[indexNext];
+      const slotIndex = this.droppableSlots.findIndex(slot => slot.currentData.id === cardInHand.id);
+
+      if(!cardInHand.isAvailable) {
+        this.clearSlot(indexPre, 'top')
+      }
+      else {
+        this.clearSlot(slotIndex, 'bottom')
+      }
+
+      // Adding card data to next slot
+      nextSlot.image = image
+      nextSlot.alt = alt
+      nextSlot.id = id
+      nextSlot.isAvailable = false
     },
     removeAndUpdate(slot, card) {
 
-      let slotIndex = this.shuffledCards.findIndex(kard => kard.id === card.id);
+      let index = this.shuffledCards.findIndex(scard => scard.id === card.id);
 
-      if(slotIndex >= 0) {
-        this.shuffledCards.splice(slotIndex, 1)
+      if(!card.isAvailable) {
+        card.isAvailable = true
         slot.currentData = card;
         slot.isAvailable = false;
-        if(this.shuffledSlots.length > 0) return;
-        this.shuffledSlots.push({})
+
+        this.clearSlot(index, 'top')
       }
       else {
+
         const indexToDelete = this.droppableSlots.findIndex(slot => slot.currentData.id === card.id)
-        this.clearSlot(indexToDelete)
+        this.clearSlot(indexToDelete, 'bottom')
         const indexToAdd = this.droppableSlots.findIndex(zlot => zlot.pairMatch === slot.pairMatch)
         let nextSlot = this.droppableSlots[indexToAdd]
         nextSlot.currentData = card;
@@ -285,16 +293,25 @@ export default {
       this.notification.timer = true;
       setTimeout(() => {
         this.notification.timer = false;
-      }, 1000)
+      }, 600)
     },
-    clearSlot(i) {
-      let previousSlot = this.droppableSlots[i];
-      previousSlot.currentData = {};
-      previousSlot.isAvailable = true;
+    clearSlot(i, area) {
+
+      if(area === 'bottom') { // bottom area
+        let slotBOTTOM = this.droppableSlots[i];
+        if(slotBOTTOM.matched) this.matchs -= 1
+        slotBOTTOM.currentData = {};
+        slotBOTTOM.matched = false
+        slotBOTTOM.isAvailable = true;
+      }
+      else { // top area
+        let slotTOP = this.shuffledCards[i]
+        slotTOP.alt = '';
+        slotTOP.id = null;
+        slotTOP.image = '';
+        slotTOP.isAvailable = true;
+      }
     },
-    dropped(e) {
-      console.log(e)
-    }
   },
   computed: {
     isOver() {
@@ -303,6 +320,9 @@ export default {
     },
     animateTime() {
       return this.notification.timer == true ? 'time-updated' : null
+    },
+    animateIncrement() {
+      return this.notification.timer == true ? 'increment-effect' : null
     },
     score() {
       let score = this.time.toString();
@@ -322,9 +342,6 @@ export default {
   created() {
     this.setup();
   },
-  mounted() {
-
-  }
 }
 </script>
 
@@ -374,6 +391,7 @@ export default {
       border-radius: 30px;
       background-color: #FEFEFE;
       box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
       .arrow {
         display: inline-block;
         width: 7px;
@@ -457,8 +475,20 @@ export default {
         display: inline-block;
         width: auto;
         height: auto;
+        position: relative;
         margin-left: 5px;
         margin-right: 5px;
+        .increment-effect {
+          font-family: Avenir, Arial, Helvetica, sans-serif;
+          font-weight: bold;
+          position: absolute;
+          animation:fadeInUp 0.6s ease backwards;
+          color: red;
+          @keyframes fadeInUp{
+            0%{transform:translate(-8px, 50px); opacity: 0;}
+            100%{transform:translate(-8px, 10px); opacity: 1;}
+          }
+        }
       }
       &-clock-icon {
         display: flex;
@@ -609,7 +639,7 @@ export default {
 }
 .drop-allowed-turn-off {
   display: inline-block;
-  background: darken(#f5f6f9, 1%);
+  background: darken(#f5f6f9, 3%);
 }
 
 // ######################  ANIMATION #########################
@@ -634,7 +664,7 @@ export default {
     transform: scale(1);
   }
   100% {
-    transform: scale(1.2);
+    transform: scale(1.4);
   }
 }
 </style>
