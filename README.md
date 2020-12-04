@@ -11,7 +11,7 @@ Added some animations. <br/>
 A little validation was added to prevent spaces and name with many characters. <br/>
 The background and the little clock was made with pure CSS.
 ## Screenshots
-Uploading...
+![zuuvo game](https://i.imgur.com/6a7XdFE.png?1)
 
 ## Tech/framework used
 <b>Built with</b>
