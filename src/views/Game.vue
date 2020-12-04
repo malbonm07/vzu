@@ -14,7 +14,7 @@
 
 
     <!----------------------- STEP 2 -------------------------->
-    <AppPanel v-else class="game-step-2">
+    <AppPanel v-else class="game-step-2" ref="game">
 
       <!------------------- HEADER ------------------->
       <header class="header">
@@ -33,7 +33,7 @@
       <main class="main">
 
         <!------------------- CARDS GROUP ------------------->
-        <div class="grid-area drag-group">
+        <div class="grid-area drag-group" id="hola">
           <drag v-for="card in shuffledCards" :key="card.id" @dragstart="dragged(card)" class="drag-group__item" :drag-image-opacity="0.8" :data="currentDragCard" type="object">
             <div class="image-container">
               <img class="logo-image" :src="card.image" :alt="card.alt">
@@ -47,11 +47,11 @@
         <p>...and drop them here to make the logo great <span>again!</span></p>
 
         <!------------------- SLOTS GROUP ------------------->
-        <div class="grid-area drop-group">
-          <div class="drop-group__item" v-for="(slot) in droppableSlots" :key="slot.id">
-            <drop v-if="slot.isAvailable" class="drop-group__item-available" @drop="onCardDrop" :ref="slot.id" :id="slot.pairMatch">
+        <div class="grid-area drop-group" ref="drop">
+          <div class="drop-group__item" v-for="(slot) in droppableSlots" :key="slot.pairMatch">
+            <drop v-if="slot.isAvailable" class="drop-group__item-available" @drop="onCardDrop" :ref="slot.ref" :id="slot.pairMatch">
             </drop>
-            <drag v-else :disabled="slot.matched" class="drop-group__item-unavailable" :data="currentDragCard" :id="slot.pairMatch" @dragstart="dragged(slot.currentData)">
+            <drag v-else :disabled="slot.matched" class="drop-group__item-unavailable" :data="currentDragCard" :id="slot.pairMatch" @dragstart="dragged(slot.currentData)" @dragend="dropped">
               <div class="image-container">
                 <img class="logo-image" :src="slot.currentData.image" :alt="slot.currentData.alt">
               </div>
@@ -116,6 +116,7 @@ export default {
           isAvailable: true,
           pairMatch: 1,
           matched: false,
+          position: null,
           currentData: {
             image: '',
             alt: '',
@@ -126,6 +127,7 @@ export default {
           isAvailable: true,
           pairMatch: 2,
           matched: false,
+          position: null,
           currentData: {
             image: '',
             alt: '',
@@ -136,6 +138,7 @@ export default {
           isAvailable: true,
           pairMatch: 3,
           matched: false,
+          position: null,
           currentData: {
             image: '',
             alt: '',
@@ -146,6 +149,7 @@ export default {
           isAvailable: true,
           pairMatch: 4,
           matched: false,
+          position: null,
           currentData: {
             image: '',
             alt: '',
@@ -156,6 +160,7 @@ export default {
           isAvailable: true,
           pairMatch: 5,
           matched: false,
+          position: null,
           currentData: {
             image: '',
             alt: '',
@@ -182,7 +187,7 @@ export default {
       }
     },
     setup() {
-      this.shuffledCards = shuffle(this.pickupCards)
+      this.shuffledCards = shuffle(this.pickupCards);
     },
     start() {
       this.game.hasStarted = true;
@@ -223,10 +228,12 @@ export default {
       }
     },
     onCardDrop(e) {
-      
+
       const card = this.currentDragCard;
       const slotIndex = this.droppableSlots.findIndex(slot => slot.pairMatch === e.top.$attrs.id)
       const slot = this.droppableSlots[slotIndex]
+
+      if(!slot.position) slot.position = e.position.x // assigning slot position
 
       if(slot.isAvailable) {
         if(isMatch(slot.pairMatch, card.id)) {
@@ -285,6 +292,9 @@ export default {
       previousSlot.currentData = {};
       previousSlot.isAvailable = true;
     },
+    dropped(e) {
+      console.log(e)
+    }
   },
   computed: {
     isOver() {
@@ -311,6 +321,9 @@ export default {
   },
   created() {
     this.setup();
+  },
+  mounted() {
+
   }
 }
 </script>
@@ -596,7 +609,7 @@ export default {
 }
 .drop-allowed-turn-off {
   display: inline-block;
-  background: transparent;
+  background: darken(#f5f6f9, 1%);
 }
 
 // ######################  ANIMATION #########################
