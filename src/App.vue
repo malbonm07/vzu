@@ -6,7 +6,7 @@
 
 <style lang="scss">
 
-@import url("//db.onlinewebfonts.com/c/9b1751bc70848a2a5938ba449afd2909?family=Campton");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
 
 :root {    
     --max-desktop-width: 730px;
@@ -34,7 +34,8 @@
   padding: 0;
 }
 #app {
-  font-family: 'Campton', Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Poppins', sans-serif, Avenir, Helvetica, Arial, sans-serif;
+  font-weight: bold;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
