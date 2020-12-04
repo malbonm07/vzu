@@ -501,7 +501,7 @@ export default {
         margin-right: 8px;
         border: 3px  solid var(--dashed-border-color);
         border-radius: 50%;
-        transform: scale(0.7)translateY(-2px);
+        transform: scale(0.7)translateY(0px);
         &::after {
           content: "";
           height: 9px;
