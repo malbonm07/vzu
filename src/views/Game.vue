@@ -387,7 +387,7 @@ export default {
       color: var(--primary-color);
       font-weight: bold;
       font-size: 16px;
-      padding: 12px 16px;
+      padding: 12px 18px;
       border: 1px solid #e2e4e9;
       border-radius: 30px;
       background-color: #FEFEFE;
