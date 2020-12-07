@@ -19,12 +19,12 @@
     --bg-secondary: #FAFAFC;
     --dashed-border-color: #7deccb;
     --square-br:  16px;
-    --quare-size: 100px;
+    --square-size: 100px;
     @media (min-width: 768px) {
-      --quare-size: 120px
+      --square-size: 120px
     }
     @media (min-width: 1000px) {
-      --quare-size: 180px;
+      --square-size: 180px;
       --max-desktop-width: 1020px;
     }
 }
