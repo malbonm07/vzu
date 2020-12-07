@@ -9,7 +9,7 @@ The name of some classes are made with the BEM methodology.
 ## Highlights
 Added some animations. <br/>
 A little validation was added to prevent spaces and name with many characters. <br/>
-The background and the little clock was made with pure CSS. <br/>
+The background and the small clock was made with pure CSS. <br/>
 Game URL -> [DEMO here](https://i-want-to-play-a-game.netlify.app/)
 ## Screenshots
 ![zuuvo game](https://i.imgur.com/6a7XdFE.png?1)
